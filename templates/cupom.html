@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Acesso - Quality Entregas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f8f9ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #0b1c30;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 32px;
+      padding: 32px 26px;
+      box-shadow: 0 20px 50px rgba(0, 87, 255, 0.10);
+      text-align: center;
+    }
+
+    .logo {
+      color: #0043c8;
+      font-weight: 800;
+      font-size: 26px;
+      margin-bottom: 28px;
+    }
+
+    .icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 24px;
+      background: #e5eeff;
+      color: #0057ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      margin: 0 auto 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    p {
+      color: #434656;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    input {
+      width: 100%;
+      height: 56px;
+      border-radius: 999px;
+      border: 1px solid #c3c5d9;
+      padding: 0 18px;
+      font-size: 16px;
+      outline: none;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    input:focus {
+      border-color: #0057ff;
+      box-shadow: 0 0 0 4px rgba(0, 87, 255, .10);
+    }
+
+    button {
+      width: 100%;
+      height: 56px;
+      border: none;
+      border-radius: 999px;
+      margin-top: 18px;
+      background: linear-gradient(135deg, #0057ff, #0043c8);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 12px 28px rgba(0, 87, 255, .22);
+    }
+
+    .erro {
+      color: #ba1a1a;
+      margin-top: 16px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <form class="card" method="POST">
+    <div class="logo">Quality Entregas</div>
+
+    <div class="icon">🔒</div>
+
+    <h1>Quando meu pedido chega?</h1>
+    <p>Digite seu cupom de acesso para consultar o prazo estimado de entrega.</p>
+
+    <input name="cupom" placeholder="Digite seu cupom" required>
+
+    <button type="submit">Acessar consulta</button>
+
+    {% if erro %}
+      <div class="erro">{{ erro }}</div>
+    {% endif %}
+  </form>
+
+</body>
+</html>

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Quando meu pedido chega?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f8f9ff;
+      color: #0b1c30;
+      padding-bottom: 105px;
+    }
+
+    header {
+      height: 70px;
+      background: #f8f9ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      box-shadow: 0 12px 32px rgba(0, 87, 255, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .menu {
+      font-size: 28px;
+      color: #0043c8;
+      font-weight: 700;
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 800;
+      color: #0043c8;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0057ff, #0043c8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      border: 2px solid #0057ff;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 34px 22px;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.22;
+      letter-spacing: -0.5px;
+    }
+
+    .title p {
+      color: #434656;
+      font-size: 17px;
+      line-height: 1.55;
+      margin-top: 12px;
+      margin-bottom: 34px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 34px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 87, 255, 0.08);
+      margin-bottom: 52px;
+      max-width: 100%;
+    }
+
+    .filters-header {
+      margin-bottom: 22px;
+    }
+
+    .filters-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: #0b1c30;
+      margin-bottom: 4px;
+    }
+
+    .filters-subtitle {
+      font-size: 14px;
+      color: #667085;
+    }
+
+    label {
+      font-weight: 800;
+      color: #1f2937;
+      font-size: 14px;
+      display: block;
+      margin-bottom: 9px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    input,
+    select {
+      width: 100%;
+      height: 58px;
+      border-radius: 999px;
+      border: 1px solid #d1d7ea;
+      padding: 0 18px;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+      color: #111827;
+      transition: .2s ease;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    .with-icon {
+      padding-left: 48px;
+    }
+
+    .field-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #737688;
+      font-size: 20px;
+      z-index: 2;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #0057ff;
+      box-shadow: 0 0 0 4px rgba(0, 87, 255, .10);
+    }
+
+    select:disabled {
+      background: #eef4ff;
+      color: #0043c8;
+      font-weight: 800;
+      cursor: not-allowed;
+    }
+
+    .toggle-wrapper {
+      background: #edf3ff;
+      border-radius: 999px;
+      padding: 6px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      min-height: 58px;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, .04);
+    }
+
+    .toggle-btn {
+      height: 46px;
+      border: none;
+      border-radius: 999px;
+      background: transparent;
+      color: #536078;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .25s ease;
+      margin: 0;
+      box-shadow: none;
+    }
+
+    .toggle-btn.active {
+      background: linear-gradient(135deg, #0057ff, #0043c8);
+      color: white;
+      box-shadow: 0 8px 18px rgba(0, 87, 255, .24);
+    }
+
+    .toggle-btn:not(.active):hover {
+      background: rgba(255,255,255,.8);
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .helper-text {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #667085;
+    }
+
+    button.submit-btn {
+      width: 100%;
+      height: 60px;
+      border: none;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #0057ff, #0043c8);
+      color: white;
+      font-size: 17px;
+      font-weight: 900;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 14px 28px rgba(0, 87, 255, .24);
+    }
+
+    .result {
+      background: linear-gradient(135deg, #0057ff, #0043c8);
+      color: white;
+      border-radius: 32px;
+      padding: 34px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 87, 255, .20);
+      margin-bottom: 52px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.20);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 22px;
+    }
+
+    .number {
+      font-size: 76px;
+      line-height: .9;
+      font-weight: 900;
+    }
+
+    .day {
+      font-size: 27px;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-top: 8px;
+    }
+
+    .line {
+      height: 1px;
+      background: rgba(255,255,255,.22);
+      margin: 28px 0 20px;
+    }
+
+    .route {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 800;
+      padding: 0 12px;
+      gap: 16px;
+    }
+
+    .route span {
+      text-align: center;
+      flex: 1;
+    }
+
+    .metrics-title {
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #263044;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background: white;
+      border-radius: 30px;
+      padding: 26px;
+      box-shadow: 0 16px 40px rgba(0, 87, 255, .07);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .metric-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      background: #e5eeff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0057ff;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .metric-label {
+      font-size: 14px;
+      color: #263044;
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 27px;
+      font-weight: 900;
+      color: #0043c8;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 460px;
+      height: 82px;
+      background: #fff;
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -8px 26px rgba(0, 87, 255, .08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 20;
+    }
+
+    .nav-item {
+      text-align: center;
+      font-size: 13px;
+      color: #1f2937;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      background: #0057ff;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 18px;
+      font-weight: 800;
+    }
+
+    .empty {
+      background: white;
+      border-radius: 28px;
+      padding: 26px;
+      text-align: center;
+      color: #434656;
+      box-shadow: 0 16px 40px rgba(0, 87, 255, .07);
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 900px) {
+      .title {
+        max-width: 620px;
+      }
+
+      .title h1 {
+        font-size: 44px;
+      }
+
+      .filters-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .field {
+        margin-bottom: 0;
+      }
+
+      .card {
+        margin-bottom: 36px;
+      }
+
+      .result-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        align-items: start;
+      }
+
+      .result {
+        margin-bottom: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="menu">☰</div>
+    <div class="brand">Quality Entregas</div>
+  </div>
+  <div class="avatar">Q</div>
+</header>
+
+<main>
+
+  <section class="title">
+    <h1>Quando meu pedido chega?</h1>
+    <p>Consulte o prazo estimado de entrega para sua região.</p>
+  </section>
+
+  <section class="card">
+    <form method="POST">
+
+      <div class="filters-header">
+        <div class="filters-title">Dados da consulta</div>
+        <div class="filters-subtitle">
+          Filtre por segmento, escolha o tipo de cliente e informe a região de entrega.
+        </div>
+      </div>
+
+      <div class="filters-grid">
+
+        <div class="field">
+          <label>Segmento</label>
+          <div class="input-wrap">
+            <span class="field-icon">▦</span>
+            <select id="segmento" class="with-icon">
+              <option value="">Todos</option>
+              {% for segmento in segmentos %}
+                <option value="{{ segmento }}">{{ segmento }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Tipo de consulta</label>
+          <div class="toggle-wrapper">
+            <button type="button" id="btnQuality" class="toggle-btn">
+              Cliente Quality
+            </button>
+
+            <button type="button" id="btnPossivel" class="toggle-btn">
+              Possível Cliente
+            </button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Cliente / Possível remetente</label>
+          <div class="input-wrap">
+            <span class="field-icon">⌕</span>
+
+            <select name="cliente" id="cliente" class="with-icon">
+              <option value="">Selecione um cliente/remetente</option>
+
+              {% for nome, dados in clientes.items() %}
+                <option
+                  value="{{ nome }}"
+                  data-uf="{{ dados.uf }}"
+                  data-cidade="{{ dados.cidade }}"
+                  data-segmento="{{ dados.segmento }}"
+                  data-tipo="{{ dados.tipo }}">
+                  {{ nome }} - {{ dados.tipo }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="helper-text" id="clienteHelper">
+            Selecione um tipo para filtrar os clientes.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Cidade Origem</label>
+          <div class="input-wrap">
+            <span class="field-icon">⌂</span>
+            <select name="cidade_origem" id="cidade_origem" class="with-icon">
+              <option value="">Selecione</option>
+              <option value="São Paulo">São Paulo</option>
+              <option value="Campinas">Campinas</option>
+              <option value="São José dos Pinhais">São José dos Pinhais</option>
+              <option value="Goiânia">Goiânia</option>
+              <option value="Hortolândia">Hortolândia</option>
+              <option value="Pouso Alegre">Pouso Alegre</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>UF Origem</label>
+          <div class="input-wrap">
+            <span class="field-icon">📍</span>
+            <select name="origem" id="origem" class="with-icon">
+              <option value="SP">SP</option>
+              <option value="PR">PR</option>
+              <option value="GO">GO</option>
+              <option value="MG">MG</option>
+              <option value="RJ">RJ</option>
+              <option value="SC">SC</option>
+              <option value="RS">RS</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Cidade Destino</label>
+          <div class="input-wrap">
+            <span class="field-icon">⌂</span>
+            <select name="cidade_destino" id="cidade_destino" class="with-icon" required>
+              <option value="">Selecione</option>
+              <option value="São Paulo">São Paulo</option>
+              <option value="Campinas">Campinas</option>
+              <option value="Curitiba">Curitiba</option>
+              <option value="São José dos Pinhais">São José dos Pinhais</option>
+              <option value="Goiânia">Goiânia</option>
+              <option value="Hortolândia">Hortolândia</option>
+              <option value="Pouso Alegre">Pouso Alegre</option>
+              <option value="Belo Horizonte">Belo Horizonte</option>
+              <option value="Rio de Janeiro">Rio de Janeiro</option>
+              <option value="Florianópolis">Florianópolis</option>
+              <option value="Porto Alegre">Porto Alegre</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>UF Destino</label>
+          <div class="input-wrap">
+            <span class="field-icon">⚑</span>
+            <select name="uf_destino" id="uf_destino" class="with-icon" required>
+              <option value="">Selecione</option>
+              <option value="SP">SP</option>
+              <option value="PR">PR</option>
+              <option value="GO">GO</option>
+              <option value="MG">MG</option>
+              <option value="RJ">RJ</option>
+              <option value="SC">SC</option>
+              <option value="RS">RS</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <input type="hidden" name="origem" id="origem_hidden">
+      <input type="hidden" name="cidade_origem" id="cidade_origem_hidden">
+      <input type="hidden" name="uf_destino" id="uf_destino_hidden">
+
+      <button type="submit" class="submit-btn">🚚 Buscar prazo</button>
+    </form>
+  </section>
+
+  {% if resultado %}
+  <div class="result-metrics">
+
+    <section class="result">
+      <div class="badge">⏱ Prazo Estimado</div>
+
+      <div class="number">{{ resultado.prazo }}</div>
+
+      <div class="day">
+        {% if resultado.prazo == 1 %}
+          dia útil
+        {% else %}
+          dias úteis
+        {% endif %}
+      </div>
+
+      <div class="line"></div>
+
+      <div class="route">
+        <span>📍 {{ resultado.cidade_origem }} / {{ resultado.origem }}</span>
+        <span>→</span>
+        <span>⚑ {{ resultado.cidade_destino }} / {{ resultado.uf_destino }}</span>
+      </div>
+    </section>
+
+    <section>
+      <div class="metrics-title">Métricas de Confiança</div>
+
+      <div class="metric-card">
+        <div class="metric-icon">▣</div>
+        <div>
+          <div class="metric-label">Performance Geral</div>
+          <div class="metric-value">{{ resultado.performance_geral }}</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">⌂</div>
+        <div>
+          <div class="metric-label">Unidade Local</div>
+          <div class="metric-value">{{ resultado.performance_regiao }}</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">▤</div>
+        <div>
+          <div class="metric-label">Cliente Consultado</div>
+          <div class="metric-value">{{ resultado.cliente }}</div>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">⌁</div>
+        <div>
+          <div class="metric-label">Tipo de Consulta</div>
+          <div class="metric-value" style="font-size: 21px;">
+            {{ resultado.tipo_cliente }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  {% else %}
+    <div class="empty">
+      Selecione um cliente ou informe a origem e destino para consultar o prazo.
+    </div>
+  {% endif %}
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="#" class="nav-item active">🚚<br>Consultar</a>
+  <a href="#" class="nav-item">↺<br>Histórico</a>
+  <a href="#" class="nav-item">☏<br>Suporte</a>
+  <a href="/sair" class="nav-item">↪<br>Sair</a>
+</nav>
+
+<script>
+  const segmentoSelect = document.getElementById("segmento");
+  const clienteSelect = document.getElementById("cliente");
+  const origemSelect = document.getElementById("origem");
+  const cidadeOrigemSelect = document.getElementById("cidade_origem");
+  const cidadeDestinoSelect = document.getElementById("cidade_destino");
+  const ufDestinoSelect = document.getElementById("uf_destino");
+
+  const origemHidden = document.getElementById("origem_hidden");
+  const cidadeOrigemHidden = document.getElementById("cidade_origem_hidden");
+  const ufDestinoHidden = document.getElementById("uf_destino_hidden");
+
+  const btnQuality = document.getElementById("btnQuality");
+  const btnPossivel = document.getElementById("btnPossivel");
+  const clienteHelper = document.getElementById("clienteHelper");
+
+  let tipoSelecionado = "";
+
+  const opcoesOriginais = Array.from(clienteSelect.options);
+
+  const cidadesUF = {
+    "São Paulo": "SP",
+    "Campinas": "SP",
+    "Curitiba": "PR",
+    "São José dos Pinhais": "PR",
+    "Goiânia": "GO",
+    "Hortolândia": "SP",
+    "Pouso Alegre": "MG",
+    "Belo Horizonte": "MG",
+    "Rio de Janeiro": "RJ",
+    "Florianópolis": "SC",
+    "Porto Alegre": "RS"
+  };
+
+  function atualizarBotoes() {
+    btnQuality.classList.toggle("active", tipoSelecionado === "Cliente Quality");
+    btnPossivel.classList.toggle("active", tipoSelecionado === "Possível Cliente");
+  }
+
+  function filtrarClientes() {
+    const segmento = segmentoSelect.value;
+
+    clienteSelect.innerHTML = "";
+
+    const optionDefault = document.createElement("option");
+    optionDefault.value = "";
+
+    if (!tipoSelecionado) {
+      optionDefault.textContent = "Selecione primeiro o tipo de consulta";
+      clienteSelect.disabled = true;
+      clienteHelper.textContent = "Escolha Cliente Quality ou Possível Cliente para carregar a lista.";
+    } else {
+      optionDefault.textContent = "Selecione um cliente/remetente";
+      clienteSelect.disabled = false;
+      clienteHelper.textContent = segmento
+        ? "Exibindo clientes do segmento selecionado."
+        : "Exibindo todos os clientes do tipo selecionado.";
+    }
+
+    clienteSelect.appendChild(optionDefault);
+
+    if (!tipoSelecionado) {
+      atualizarOrigem();
+      return;
+    }
+
+    opcoesOriginais.forEach(option => {
+      if (!option.value) return;
+
+      const segmentoOk = !segmento || option.dataset.segmento === segmento;
+      const tipoOk = option.dataset.tipo === tipoSelecionado;
+
+      if (segmentoOk && tipoOk) {
+        clienteSelect.appendChild(option.cloneNode(true));
+      }
+    });
+
+    if (clienteSelect.options.length === 1) {
+      clienteHelper.textContent = "Nenhum cliente encontrado para os filtros selecionados.";
+    }
+
+    atualizarOrigem();
+  }
+
+  function atualizarOrigem() {
+    const option = clienteSelect.options[clienteSelect.selectedIndex];
+
+    if (option && option.dataset.uf) {
+      origemSelect.value = option.dataset.uf;
+      cidadeOrigemSelect.value = option.dataset.cidade;
+
+      origemSelect.disabled = true;
+      cidadeOrigemSelect.disabled = true;
+
+      origemHidden.value = option.dataset.uf;
+      cidadeOrigemHidden.value = option.dataset.cidade;
+    } else {
+      origemSelect.disabled = false;
+      cidadeOrigemSelect.disabled = false;
+
+      origemHidden.value = origemSelect.value;
+      cidadeOrigemHidden.value = cidadeOrigemSelect.value;
+    }
+  }
+
+  function atualizarDestino() {
+    const cidade = cidadeDestinoSelect.value;
+    const uf = cidadesUF[cidade] || "";
+
+    if (uf) {
+      ufDestinoSelect.value = uf;
+      ufDestinoSelect.disabled = true;
+      ufDestinoHidden.value = uf;
+    } else {
+      ufDestinoSelect.disabled = false;
+      ufDestinoHidden.value = ufDestinoSelect.value;
+    }
+  }
+
+  btnQuality.addEventListener("click", function () {
+    tipoSelecionado = tipoSelecionado === "Cliente Quality" ? "" : "Cliente Quality";
+    atualizarBotoes();
+    filtrarClientes();
+  });
+
+  btnPossivel.addEventListener("click", function () {
+    tipoSelecionado = tipoSelecionado === "Possível Cliente" ? "" : "Possível Cliente";
+    atualizarBotoes();
+    filtrarClientes();
+  });
+
+  segmentoSelect.addEventListener("change", filtrarClientes);
+  clienteSelect.addEventListener("change", atualizarOrigem);
+  cidadeDestinoSelect.addEventListener("change", atualizarDestino);
+
+  origemSelect.addEventListener("change", function () {
+    origemHidden.value = origemSelect.value;
+  });
+
+  cidadeOrigemSelect.addEventListener("change", function () {
+    cidadeOrigemHidden.value = cidadeOrigemSelect.value;
+  });
+
+  ufDestinoSelect.addEventListener("change", function () {
+    ufDestinoHidden.value = ufDestinoSelect.value;
+  });
+
+  atualizarBotoes();
+  filtrarClientes();
+  atualizarOrigem();
+  atualizarDestino();
+</script>
+
+</body>
+</html>
