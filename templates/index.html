@@ -155,6 +155,7 @@
       color: #737688;
       font-size: 20px;
       z-index: 2;
+      pointer-events: none;
     }
 
     input:focus,
@@ -435,7 +436,7 @@
       <div class="filters-header">
         <div class="filters-title">Dados da consulta</div>
         <div class="filters-subtitle">
-          Filtre por segmento, escolha o tipo de cliente e informe a região de entrega.
+          Você pode consultar selecionando um cliente/remetente ou informar manualmente a cidade e UF de origem.
         </div>
       </div>
 
@@ -473,7 +474,7 @@
             <span class="field-icon">⌕</span>
 
             <select name="cliente" id="cliente" class="with-icon">
-              <option value="">Selecione um cliente/remetente</option>
+              <option value="">Consulta sem cliente/remetente</option>
 
               {% for nome, dados in clientes.items() %}
                 <option
@@ -488,7 +489,7 @@
             </select>
           </div>
           <div class="helper-text" id="clienteHelper">
-            Selecione um tipo para filtrar os clientes.
+            Opcional: escolha um tipo para filtrar clientes ou consulte manualmente pela origem.
           </div>
         </div>
 
@@ -498,12 +499,9 @@
             <span class="field-icon">⌂</span>
             <select name="cidade_origem" id="cidade_origem" class="with-icon">
               <option value="">Selecione</option>
-              <option value="São Paulo">São Paulo</option>
-              <option value="Campinas">Campinas</option>
-              <option value="São José dos Pinhais">São José dos Pinhais</option>
-              <option value="Goiânia">Goiânia</option>
-              <option value="Hortolândia">Hortolândia</option>
-              <option value="Pouso Alegre">Pouso Alegre</option>
+              {% for cidade in cidades %}
+                <option value="{{ cidade }}">{{ cidade }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -513,13 +511,10 @@
           <div class="input-wrap">
             <span class="field-icon">📍</span>
             <select name="origem" id="origem" class="with-icon">
-              <option value="SP">SP</option>
-              <option value="PR">PR</option>
-              <option value="GO">GO</option>
-              <option value="MG">MG</option>
-              <option value="RJ">RJ</option>
-              <option value="SC">SC</option>
-              <option value="RS">RS</option>
+              <option value="">Selecione</option>
+              {% for uf in ufs %}
+                <option value="{{ uf }}">{{ uf }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -530,17 +525,9 @@
             <span class="field-icon">⌂</span>
             <select name="cidade_destino" id="cidade_destino" class="with-icon" required>
               <option value="">Selecione</option>
-              <option value="São Paulo">São Paulo</option>
-              <option value="Campinas">Campinas</option>
-              <option value="Curitiba">Curitiba</option>
-              <option value="São José dos Pinhais">São José dos Pinhais</option>
-              <option value="Goiânia">Goiânia</option>
-              <option value="Hortolândia">Hortolândia</option>
-              <option value="Pouso Alegre">Pouso Alegre</option>
-              <option value="Belo Horizonte">Belo Horizonte</option>
-              <option value="Rio de Janeiro">Rio de Janeiro</option>
-              <option value="Florianópolis">Florianópolis</option>
-              <option value="Porto Alegre">Porto Alegre</option>
+              {% for cidade in cidades %}
+                <option value="{{ cidade }}">{{ cidade }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -551,13 +538,9 @@
             <span class="field-icon">⚑</span>
             <select name="uf_destino" id="uf_destino" class="with-icon" required>
               <option value="">Selecione</option>
-              <option value="SP">SP</option>
-              <option value="PR">PR</option>
-              <option value="GO">GO</option>
-              <option value="MG">MG</option>
-              <option value="RJ">RJ</option>
-              <option value="SC">SC</option>
-              <option value="RS">RS</option>
+              {% for uf in ufs %}
+                <option value="{{ uf }}">{{ uf }}</option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -611,7 +594,7 @@
       <div class="metric-card">
         <div class="metric-icon">⌂</div>
         <div>
-          <div class="metric-label">Unidade Local</div>
+          <div class="metric-label">Performance da origem consultada</div>
           <div class="metric-value">{{ resultado.performance_regiao }}</div>
         </div>
       </div>
@@ -638,7 +621,7 @@
   </div>
   {% else %}
     <div class="empty">
-      Selecione um cliente ou informe a origem e destino para consultar o prazo.
+      Você pode selecionar um cliente/remetente ou preencher manualmente a cidade e UF de origem.
     </div>
   {% endif %}
 
@@ -671,23 +654,11 @@
 
   const opcoesOriginais = Array.from(clienteSelect.options);
 
-  const cidadesUF = {
-    "São Paulo": "SP",
-    "Campinas": "SP",
-    "Curitiba": "PR",
-    "São José dos Pinhais": "PR",
-    "Goiânia": "GO",
-    "Hortolândia": "SP",
-    "Pouso Alegre": "MG",
-    "Belo Horizonte": "MG",
-    "Rio de Janeiro": "RJ",
-    "Florianópolis": "SC",
-    "Porto Alegre": "RS"
-  };
+  const cidadesUF = {{ cidades_uf | tojson }};
 
   function atualizarBotoes() {
-    btnQuality.classList.toggle("active", tipoSelecionado === "Cliente Quality");
-    btnPossivel.classList.toggle("active", tipoSelecionado === "Possível Cliente");
+    btnQuality.classList.toggle("active", tipoSelecionado === "Quality");
+    btnPossivel.classList.toggle("active", tipoSelecionado === "Prospectar");
   }
 
   function filtrarClientes() {
@@ -697,31 +668,14 @@
 
     const optionDefault = document.createElement("option");
     optionDefault.value = "";
-
-    if (!tipoSelecionado) {
-      optionDefault.textContent = "Selecione primeiro o tipo de consulta";
-      clienteSelect.disabled = true;
-      clienteHelper.textContent = "Escolha Cliente Quality ou Possível Cliente para carregar a lista.";
-    } else {
-      optionDefault.textContent = "Selecione um cliente/remetente";
-      clienteSelect.disabled = false;
-      clienteHelper.textContent = segmento
-        ? "Exibindo clientes do segmento selecionado."
-        : "Exibindo todos os clientes do tipo selecionado.";
-    }
-
+    optionDefault.textContent = "Consulta sem cliente/remetente";
     clienteSelect.appendChild(optionDefault);
-
-    if (!tipoSelecionado) {
-      atualizarOrigem();
-      return;
-    }
 
     opcoesOriginais.forEach(option => {
       if (!option.value) return;
 
       const segmentoOk = !segmento || option.dataset.segmento === segmento;
-      const tipoOk = option.dataset.tipo === tipoSelecionado;
+      const tipoOk = !tipoSelecionado || option.dataset.tipo === tipoSelecionado;
 
       if (segmentoOk && tipoOk) {
         clienteSelect.appendChild(option.cloneNode(true));
@@ -729,10 +683,28 @@
     });
 
     if (clienteSelect.options.length === 1) {
-      clienteHelper.textContent = "Nenhum cliente encontrado para os filtros selecionados.";
+      clienteHelper.textContent = "Nenhum cliente encontrado. Você ainda pode consultar preenchendo a origem manualmente.";
+    } else if (!tipoSelecionado && !segmento) {
+      clienteHelper.textContent = "Opcional: filtre por tipo/segmento ou consulte manualmente pela origem.";
+    } else {
+      clienteHelper.textContent = "Clientes filtrados conforme tipo e segmento selecionados.";
     }
 
     atualizarOrigem();
+  }
+
+  function preencherUFPorCidade(selectCidade, selectUF, hiddenUF) {
+    const cidade = selectCidade.value;
+    const uf = cidadesUF[cidade] || "";
+
+    if (uf) {
+      selectUF.value = uf;
+      selectUF.disabled = true;
+      hiddenUF.value = uf;
+    } else {
+      selectUF.disabled = false;
+      hiddenUF.value = selectUF.value;
+    }
   }
 
   function atualizarOrigem() {
@@ -748,51 +720,43 @@
       origemHidden.value = option.dataset.uf;
       cidadeOrigemHidden.value = option.dataset.cidade;
     } else {
-      origemSelect.disabled = false;
       cidadeOrigemSelect.disabled = false;
+      origemSelect.disabled = false;
 
-      origemHidden.value = origemSelect.value;
+      preencherUFPorCidade(cidadeOrigemSelect, origemSelect, origemHidden);
       cidadeOrigemHidden.value = cidadeOrigemSelect.value;
     }
   }
 
   function atualizarDestino() {
-    const cidade = cidadeDestinoSelect.value;
-    const uf = cidadesUF[cidade] || "";
-
-    if (uf) {
-      ufDestinoSelect.value = uf;
-      ufDestinoSelect.disabled = true;
-      ufDestinoHidden.value = uf;
-    } else {
-      ufDestinoSelect.disabled = false;
-      ufDestinoHidden.value = ufDestinoSelect.value;
-    }
+    preencherUFPorCidade(cidadeDestinoSelect, ufDestinoSelect, ufDestinoHidden);
   }
 
   btnQuality.addEventListener("click", function () {
-    tipoSelecionado = tipoSelecionado === "Cliente Quality" ? "" : "Cliente Quality";
+    tipoSelecionado = tipoSelecionado === "Quality" ? "" : "Quality";
     atualizarBotoes();
     filtrarClientes();
   });
 
   btnPossivel.addEventListener("click", function () {
-    tipoSelecionado = tipoSelecionado === "Possível Cliente" ? "" : "Possível Cliente";
+    tipoSelecionado = tipoSelecionado === "Prospectar" ? "" : "Prospectar";
     atualizarBotoes();
     filtrarClientes();
   });
 
   segmentoSelect.addEventListener("change", filtrarClientes);
   clienteSelect.addEventListener("change", atualizarOrigem);
-  cidadeDestinoSelect.addEventListener("change", atualizarDestino);
+
+  cidadeOrigemSelect.addEventListener("change", function () {
+    cidadeOrigemHidden.value = cidadeOrigemSelect.value;
+    preencherUFPorCidade(cidadeOrigemSelect, origemSelect, origemHidden);
+  });
 
   origemSelect.addEventListener("change", function () {
     origemHidden.value = origemSelect.value;
   });
 
-  cidadeOrigemSelect.addEventListener("change", function () {
-    cidadeOrigemHidden.value = cidadeOrigemSelect.value;
-  });
+  cidadeDestinoSelect.addEventListener("change", atualizarDestino);
 
   ufDestinoSelect.addEventListener("change", function () {
     ufDestinoHidden.value = ufDestinoSelect.value;
